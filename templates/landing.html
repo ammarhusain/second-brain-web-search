@@ -1,0 +1,55 @@
+<script src="{{ url_for('static', filename='js/landing.js') }}" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/landing.css') }}">
+
+
+<body>
+  <nav>
+    <ul>
+      <li><a href="https://www.ammarh.io/">about me</a></li>
+      <li><a href="https://publish.obsidian.md/ammar/public-command-center">notes</a></li>
+      <li class="nav-right"><a href="https://ammarh-ai-playground.herokuapp.com/">chat</a></li>
+      <li><a href="mailto:self@ammarh.io?subject = Second Brain Search">email</a></li>
+    </ul>
+  </nav>
+
+  <div class="google-function">
+    <p>
+      <span class="google-name">A</span>
+      <span class="google-name">m</span>
+      <span class="google-name">m</span>
+      <span class="google-name">a</span>
+      <span class="google-name">r</span>
+    </p>
+    
+    <form method="POST" action="{{ url_for('result') }}">
+      <div>
+        <i class="fas fa-search"> </i> 
+          <input 
+          type="text"
+          id="searchtext"
+          name="searchtext">
+      </div>
+
+      <div class="confidence">
+        Make stuff up  
+        <input type="range" id="confidence" name="confidence" min="0.60" max="0.85" step="0.01" value="0.78">
+        Better be sure
+      </div>
+      <br><br>
+      <div class="button-group">
+        <button class="google-button" name="search-button" type="submit" value=1>I'm Feeling Lazy</button>
+        <button class="google-button" name="search-button" type="submit" value=0>Search</button>
+      </div>
+    </form>
+  </div>
+  
+  <footer>
+
+    <ul class="footer-details">
+      <li><a href="#">How Search works</a></li>
+    </ul>
+  </footer>
+
+    
+    
+</body>
