@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
 import openai, pinecone
-from bs4 import BeautifulSoup
 import time, re
 
 app = Flask(__name__)
@@ -90,14 +89,6 @@ def complete(prompt):
         stop=None
     )
     return res['choices'][0]['text'].strip()
-
-def extract_note_content(html_str):
-    # Assume `html` is the string containing the HTML code
-    soup = BeautifulSoup(html_str, 'html.parser')
-    # Find all <li> tags and extract the text
-    tags = soup.find_all('li')
-    texts = [tag.get_text() for tag in tags]
-    return texts
 
 if __name__ == '__main__':
     app.run(debug=True)

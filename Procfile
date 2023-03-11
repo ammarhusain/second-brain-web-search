@@ -1,1 +1,1 @@
-web: gunicorn brain_infer:app
+web: gunicorn search_inference:app

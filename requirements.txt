@@ -2,3 +2,4 @@ pinecone-client
 openai
 gunicorn>=20.0,<21.0
 requests
+flask
