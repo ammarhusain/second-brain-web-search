@@ -15,7 +15,7 @@ PINECONE_INDEX = pinecone.Index('obsidian-second-brain')
 
 openai.api_key = "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"
 EMBED_MODEL = "text-embedding-ada-002"
-CONTEXT_LENGTH = 11000
+CONTEXT_LENGTH = 10000
 # Landing page
 @app.route('/')
 def index():
@@ -68,7 +68,7 @@ def result():
             )
             prompt_end = (
                 f"\n---\nGiven this and only this context elaborate on the query: "+
-                "{session_variables['searchtext']}\nElaborate: "
+                f"{session_variables['searchtext']}\nElaborate: "
             )
             prompt = prompt_start + context_str + prompt_end
             generated_qa = complete(prompt)
