@@ -63,11 +63,12 @@ def result():
         if re.search(r'\w', context_str):
             # build our prompt with the retrieved contexts included
             prompt_start = (
-                "Answer the question based on the context below.\n\n"+
+                "Answer the query based on the context below.\n"+
                 "Context:\n"
             )
             prompt_end = (
-                f"\n---\nQuestion: {session_variables['searchtext']}\nAnswer: "
+                f"\n---\nGiven this and only this context elaborate on the query: "+
+                "{session_variables['searchtext']}\nElaborate: "
             )
             prompt = prompt_start + context_str + prompt_end
             generated_qa = complete(prompt)
