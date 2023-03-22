@@ -136,7 +136,7 @@ def upload_to_pinecone(notes_snippets, pinecone_index):
             res = openai.Embedding.create(input=notes, engine=OPENAI_EMBED_MODEL)
         except Exception as e:
             # handle the exception by printing a message
-            print(f"An exception occurred: ")#{repr(e)}")
+            print(f"An exception occurred: {repr(e)}")
             done = False
             while not done:
                 #sleep(5)
