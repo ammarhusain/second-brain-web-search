@@ -72,9 +72,8 @@ def result():
                         'link': link,
                         'context' : context_str
                         })
-
+        
     results = sorted(results, key=lambda x: x['score'], reverse=True)
- 
     results_time = time.time() - query_time
 
     generated_qa = ""
@@ -102,7 +101,7 @@ def result():
             
             generated_qa_time = time.time() - results_time
 
-    logging.debug(f"embed_time={embed_time}, query_time={query_time}, results_time={results_time}, generated_qa_time={generated_qa_time}")
+    logging.error(f"embed_time={embed_time}, query_time={query_time}, results_time={results_time}, generated_qa_time={generated_qa_time}")
     return render_template('result.html', results=results, generated_qa = generated_qa, \
                 session_variables=session_variables, elapsed_time=time.time()-start_time)
 
@@ -124,7 +123,7 @@ def complete_gpt_3_5(prompt):
     res = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
-            {"role": "system", "content": "You are a helpful and clairvoyant savant and oracle who tries to best answer the users query using just the context they provide."},
+            {"role": "system", "content": "You are a helpful assistant that elaborates on the users query using only the context they provide. If the context does not provide sufficient details for you to formulate an answer you politely let them know."},
             {"role": "user", "content": prompt}
         ]
     )
