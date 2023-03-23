@@ -1,20 +1,20 @@
 from flask import Flask, render_template, request
 import openai, pinecone
 import time, re
-import logging
+import logging, os
 
 app = Flask(__name__)
 
 URL_PREFIX = "https://publish.obsidian.md/ammar/"
 # initialize connection to pinecone (get API key at app.pinecone.io)
 pinecone.init(
-    api_key="ab65a920-5194-49fe-a00a-a46841ed398d",
+    api_key=os.getenv("PINECONE_API_KEY"),
     environment="us-east1-gcp"
 )
 # connect to index
 PINECONE_INDEX = pinecone.Index('obsidian-second-brain')
 
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 EMBED_MODEL = "text-embedding-ada-002"
 CONTEXT_LENGTH = 10000
 # Landing page
