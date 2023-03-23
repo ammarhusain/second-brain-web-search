@@ -109,7 +109,7 @@ def result():
 def complete(prompt):
     # query text-davinci-003
     res = openai.Completion.create(
-        engine='gpt-3.5-turbo',#'text-davinci-003',
+        engine='text-davinci-003',
         prompt=prompt,
         temperature=0,
         max_tokens=1000,
@@ -119,6 +119,16 @@ def complete(prompt):
         stop=None
     )
     return res['choices'][0]['text'].strip()
+
+def complete_gpt_3_5(prompt):
+    res = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+            {"role": "system", "content": "You are a helpful and clairvoyant savant and oracle who tries to best answer the users query using just the context they provide."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return res['choices'][0]['message']['content']
 
 if __name__ == '__main__':
     app.run(debug=True)
