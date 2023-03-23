@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import openai, pinecone
 import time, re
+import logging
 
 app = Flask(__name__)
 
@@ -30,13 +31,30 @@ def result():
     session_variables['confidence'] = float(request.form['confidence'])
     session_variables['generate_ans'] = request.form['search-button']
 
-    search_embedding = openai.Embedding.create(
-    input=session_variables['searchtext'],
-    engine=EMBED_MODEL
-    )['data'][0]['embedding']
+    try:
+        search_embedding = openai.Embedding.create(
+        input=session_variables['searchtext'],
+        engine=EMBED_MODEL
+        )['data'][0]['embedding']
+    except:
+        msg = "OpenAI embedding call failed"
+        logging.error(msg)
+        return render_template('result.html', results=[], generated_qa=msg, \
+                session_variables=session_variables, elapsed_time=time.time()-start_time)
+    
+    embed_time = time.time() - start_time
+    
+    try:
+        # retrieve from Pinecone
+        res = PINECONE_INDEX.query(search_embedding, top_k=20, include_metadata=True)
+    except:
+        msg = "Pinecone retrieval call failed"
+        logging.error(msg)
+        return render_template('result.html', results=[], generated_qa=msg, \
+                session_variables=session_variables, elapsed_time=time.time()-start_time)
 
-    # retrieve from Pinecone
-    res = PINECONE_INDEX.query(search_embedding, top_k=20, include_metadata=True)
+    query_time = time.time() - embed_time
+
     results = []
     for match in res['matches']:
         if match['score'] < session_variables['confidence']:
@@ -57,13 +75,16 @@ def result():
 
     results = sorted(results, key=lambda x: x['score'], reverse=True)
  
+    results_time = time.time() - query_time
+
     generated_qa = ""
+    generated_qa_time = -1
     if session_variables['generate_ans']:
         context_str = "\n---\n".join([x['context'] for x in results])[:CONTEXT_LENGTH]
         if re.search(r'\w', context_str):
             # build our prompt with the retrieved contexts included
             prompt_start = (
-                "Answer the query based on the context below.\n"+
+                #"Answer the query based on the context below.\n"+
                 "Context:\n"
             )
             prompt_end = (
@@ -71,16 +92,24 @@ def result():
                 f"{session_variables['searchtext']}\nElaborate: "
             )
             prompt = prompt_start + context_str + prompt_end
-            generated_qa = complete(prompt)
-            print(prompt)
+            try:
+                generated_qa = complete(prompt)
+            except:
+                msg = "OpenAI GPT-3.5 text completion failed"
+                logging.error(msg)
+                return render_template('result.html', results=[], generated_qa=msg, \
+                        session_variables=session_variables, elapsed_time=time.time()-start_time)
+            
+            generated_qa_time = time.time() - results_time
 
+    logging.debug(f"embed_time={embed_time}, query_time={query_time}, results_time={results_time}, generated_qa_time={generated_qa_time}")
     return render_template('result.html', results=results, generated_qa = generated_qa, \
                 session_variables=session_variables, elapsed_time=time.time()-start_time)
 
 def complete(prompt):
     # query text-davinci-003
     res = openai.Completion.create(
-        engine='text-davinci-003',
+        engine='gpt-3.5-turbo',#'text-davinci-003',
         prompt=prompt,
         temperature=0,
         max_tokens=1000,
