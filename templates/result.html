@@ -11,7 +11,7 @@
 
 <body>
     <div id="header">
-        <form method="POST" action="{{ url_for('result') }}">
+        <form method="POST" action="{{ url_for('result') }}" autocomplete="off">
 
         <div id="topbar">
             <!-- <img id="searchbarimage" src="{{ url_for('static', filename='image/favicon-32.png') }}" /> -->
@@ -28,7 +28,7 @@
             </div>
             &nbsp;
             <div class="session_variables">
-                <input type="range" id="confidence" name="confidence" value="{{ session_variables['confidence'] }}" style="display:none;" >
+                <input type="range" id="confidence" name="confidence" value="{{ session_variables['confidence'] }}" min="{{ session_variables['confidence'] }}" max="{{ session_variables['confidence'] }}" style="display:none;">
                 <input type="range" name="search-button" value="{{ session_variables['generate_ans'] }}" style="display:none;">
             </div>
         </div>

@@ -31,6 +31,7 @@ def result():
     session_variables['confidence'] = float(request.form['confidence'])
     session_variables['generate_ans'] = request.form['search-button']
 
+    logging.error(f"session : {session_variables}")
     try:
         search_embedding = openai.Embedding.create(
         input=session_variables['searchtext'],
