@@ -16,7 +16,7 @@ PINECONE_INDEX = pinecone.Index('obsidian-second-brain')
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 EMBED_MODEL = "text-embedding-ada-002"
-CONTEXT_LENGTH = 10000
+CONTEXT_LENGTH = 20000
 # Landing page
 @app.route('/')
 def index():
@@ -93,7 +93,7 @@ def result():
             )
             prompt = prompt_start + context_str + prompt_end
             try:
-                generated_qa = complete(prompt)
+                generated_qa = complete_gpt_3_5(prompt)
             except:
                 msg = "OpenAI GPT-3.5 text completion failed"
                 logging.error(msg)
@@ -129,6 +129,18 @@ def complete_gpt_3_5(prompt):
         ]
     )
     return res['choices'][0]['message']['content']
+
+def complete_gpt_4(prompt):
+    res = openai.ChatCompletion.create(
+    model="gpt-4",
+    messages=[
+            {"role": "system", "content": "You are a helpful assistant that elaborates on the users query using only the context they provide. If the context does not provide sufficient details for you to formulate an answer you politely let them know."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return res['choices'][0]['message']['content']
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
