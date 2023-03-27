@@ -15,7 +15,7 @@
 
         <div id="topbar">
             <!-- <img id="searchbarimage" src="{{ url_for('static', filename='image/favicon-32.png') }}" /> -->
-            <img id="searchbarimage" src="../static/image/favicon-32.png" href="https://second-brain-web-search.herokuapp.com/"/>
+            <a href="https://second-brain-web-search.herokuapp.com/"><img id="searchbarimage" src="../static/image/favicon-32.png" /></a>
             <div id="searchbar" type="text">
                 <input name="searchtext" id="searchtext" type="text" value="{{ session_variables['searchtext'] }}" />          
                 <button id="searchbarbutton">
