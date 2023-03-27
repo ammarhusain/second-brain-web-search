@@ -93,9 +93,9 @@ def result():
             )
             prompt = prompt_start + context_str + prompt_end
             try:
-                generated_qa = complete(prompt)
-            except:
-                msg = "OpenAI GPT-3.5 text completion failed"
+                generated_qa = complete_gpt_3_5(prompt)
+            except Exception as e:
+                msg = f"OpenAI GPT-3.5 text completion failed. Exception - {e}"
                 logging.error(msg)
                 return render_template('result.html', results=[], generated_qa=msg, \
                         session_variables=session_variables, elapsed_time=time.time()-start_time)
@@ -124,7 +124,7 @@ def complete_gpt_3_5(prompt):
     res = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
-            {"role": "system", "content": "You are a helpful assistant that elaborates on the users query using only the context they provide. If the context does not provide sufficient details for you to formulate an answer you politely let them know."},
+            {"role": "system", "content": "You are a helpful assistant that elaborates on the users query primarily using only the context they provide."},
             {"role": "user", "content": prompt}
         ]
     )
