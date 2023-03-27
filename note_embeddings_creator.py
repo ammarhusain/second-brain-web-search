@@ -3,12 +3,13 @@ import pinecone
 import re, os, hashlib, fnmatch
 from tqdm.auto import tqdm
 from time import sleep
+import datetime
 
 # global variables
 PINECONE_INDEX_NAME = "obsidian-second-brain"
 OPENAI_EMBED_MODEL = "text-embedding-ada-002"
-openai.api_key = "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"
-PINECONE_API_KEY="ab65a920-5194-49fe-a00a-a46841ed398d"
+openai.api_key = api_key=os.getenv("OPENAI_API_KEY")
+PINECONE_API_KEY=api_key=os.getenv("PINECONE_API_KEY")
 PINECONE_ENVIRONMENT="us-east1-gcp"
 
 def search_image_files(filename, directory):
@@ -41,13 +42,21 @@ def parse_markdown_file(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
     _, filename = os.path.split(file_path)
-    # find the first header to use data from there on
-    for i, string in enumerate(lines):
-        if string.startswith("#"):
+
+    # Remove the YAML frontmatter.
+    # Initialize a counter to keep track of how many '---'s we've seen
+    count = 0
+    for i, line in enumerate(lines):
+        # If we've seen one '---' already and we've just seen another, return the rest of the lines
+        if line == '---\n' and count == 1:
             lines = lines[i:]
             break
+        # If we've just seen our first 'b', increment the count
+        elif line == '---\n' and count == 0:
+            count += 1
+
     # insert the filename as first element
-    lines.insert(0, filename + "\n")
+    lines.insert(0, filename + '\n')
     return lines
 
 def split_list(note_lines_list, word_threshold):
@@ -89,7 +98,7 @@ def initialize_pinecone_index(index_name):
 
     # check if index already exists (it shouldn't if this is first time)
     if index_name not in pinecone.list_indexes():
-        print("creating new pinecone index")
+        print("Creating new pinecone index")
         # if does not exist, create index
         pinecone.create_index(
             index_name,
@@ -131,6 +140,8 @@ def upload_to_pinecone(notes_snippets, pinecone_index):
         ids_batch = [x['uuid'] for x in meta_batch]
         # get notes to encode
         notes = [x['note'] for x in meta_batch]
+        # get file names to encode
+        files = [x['file'] for x in meta_batch]
         # create embeddings (try-except added to avoid RateLimitError)
         try:
             res = openai.Embedding.create(input=notes, engine=OPENAI_EMBED_MODEL)
@@ -145,7 +156,7 @@ def upload_to_pinecone(notes_snippets, pinecone_index):
                     done = True
                 except Exception as e:
                     print(f"Still getting an exception: {e} ... Passing")
-                    print(notes)
+                    print(files)
                     pass
         embeds = [record['embedding'] for record in res['data']]
         # cleanup metadata
@@ -158,6 +169,7 @@ def upload_to_pinecone(notes_snippets, pinecone_index):
         to_upsert = list(zip(ids_batch, embeds, meta_batch))
         # upsert to Pinecone
         pinecone_index.upsert(vectors=to_upsert)
+    print(f"Finished upserting to Pinecone index: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 if __name__ == '__main__':
