@@ -16,7 +16,7 @@ PINECONE_INDEX = pinecone.Index('obsidian-second-brain')
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 EMBED_MODEL = "text-embedding-ada-002"
-CONTEXT_LENGTH = 20000
+CONTEXT_LENGTH = 10000
 # Landing page
 @app.route('/')
 def index():
@@ -93,7 +93,7 @@ def result():
             )
             prompt = prompt_start + context_str + prompt_end
             try:
-                generated_qa = complete_gpt_3_5(prompt)
+                generated_qa = complete(prompt)
             except:
                 msg = "OpenAI GPT-3.5 text completion failed"
                 logging.error(msg)
