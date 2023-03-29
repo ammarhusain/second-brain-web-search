@@ -5,7 +5,7 @@ import logging, os
 
 app = Flask(__name__)
 
-URL_PREFIX = "https://publish.obsidian.md/ammar/"
+URL_PREFIX = "https://notes.ammarh.io/"
 # initialize connection to pinecone (get API key at app.pinecone.io)
 pinecone.init(
     api_key=os.getenv("PINECONE_API_KEY"),
