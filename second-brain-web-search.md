@@ -24,7 +24,13 @@ publish: true
 [[note_embeddings_creator.py]]
 
 ### Flask Core
-
+To run locally
+```![[search_inference_st_app.py]]
+source ~/.bash_profile
+conda activate pinecone
+export FLASK_APP=search_inference.py
+flask run
+```
 [[Procfile]]
 [[requirements.txt]]
 [[search_inference.py]]
@@ -32,3 +38,8 @@ publish: true
 ### Experimentation
 
 [[pinecone_sandbox.ipynb]]
+
+[[second-walk-5.gif]]
+[[second-walk-5.mp4]]
+[[second-walk-3.mp4]]
+[[second-walk-3.gif]]

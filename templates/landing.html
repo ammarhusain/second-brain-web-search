@@ -8,7 +8,7 @@
   <nav>
     <ul>
       <li><a href="https://www.ammarh.io/">about me</a></li>
-      <li><a href="https://publish.obsidian.md/ammar/public-command-center">notes</a></li>
+      <li><a href="https://notes.ammarh.io">notes</a></li>
       <li class="nav-right"><a href="https://ammarh-ai-playground.herokuapp.com/">chat</a></li>
       <li><a href="mailto:self@ammarh.io?subject = Second Brain Search">email</a></li>
     </ul>
@@ -25,7 +25,7 @@
     <p>Search through my Digital-Brain</p>
     <p>(powered by GPT-4)</p>
 
-    <form method="POST" action="{{ url_for('result') }}">
+    <form id="form" method="POST" action="{{ url_for('result') }}">
       <div>
         <i class="fas fa-search"> </i> 
           <input 
@@ -44,6 +44,7 @@
         <button class="google-button" name="search-button" type="submit" value=1>I'm Feeling Lazy</button>
         <button class="google-button" name="search-button" type="submit" value=0>Search</button>
       </div>
+      <div id="wait-message" style="display: none;">Please wait...</div>
     </form>
   </div>
   
