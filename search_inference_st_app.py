@@ -137,7 +137,7 @@ if submit:
 
     st.write(f"About {len(results)} results in {time.time()-start_time:.02f} seconds ⏳")
     if session_variables['generate_ans']:
-        expander = st.expander("Summarized Answer:")
+        expander = st.expander("####### **Summarized Answer:**")
 
     for result in results:
         st.write(f"\n##### [{result['file']}]({result['link']})")

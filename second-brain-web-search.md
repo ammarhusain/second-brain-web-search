@@ -1,6 +1,6 @@
 ---
 created: 2023-03-10-Friday 14:39
-modified: 2023-05-24-Wednesday 15:31
+modified: 2023-05-24-Wednesday 16:35
 publish: true
 ---
 # Second-brain-web-search
@@ -16,6 +16,7 @@ publish: true
 [[landing.js]]
 [[landing.css]]
 [[favicon-32.png]]
+[[setup.sh]]
 
 ### Daily Jobs
 
@@ -40,16 +41,20 @@ flask run
 
 ### Streamlit
 
+[[search_inference_st_app.py]]
+
 To run locally
 `streamlit run search_inference_st_app.py`
 
 ### Heroku
 
 To locally start all of the process types that are defined in your `Procfile`:
+`$ heroku local`
+If port is busy or connection in use error, just run it on a different port:
+`heroku local web --port 5123`
+If you're getting a authentication error when trying to push to heroku brain: `git push heroku main`
+Do `heroku login` on the terminal to authenticate
 
-```term
-$ heroku local
-```
 ### Experimentation
 
 [[pinecone_sandbox.ipynb]]
