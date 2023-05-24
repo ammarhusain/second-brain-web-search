@@ -1,6 +1,6 @@
 ---
 created: 2023-03-10-Friday 14:39
-modified: 2023-03-29-Wednesday 09:22
+modified: 2023-05-24-Wednesday 15:31
 publish: true
 ---
 # Second-brain-web-search
@@ -24,17 +24,32 @@ publish: true
 [[note_embeddings_creator.py]]
 
 ### Flask Core
+
 To run locally
+
 ```![[search_inference_st_app.py]]
 source ~/.bash_profile
 conda activate pinecone
 export FLASK_APP=search_inference.py
 flask run
 ```
+
 [[Procfile]]
 [[requirements.txt]]
 [[search_inference.py]]
 
+### Streamlit
+
+To run locally
+`streamlit run search_inference_st_app.py`
+
+### Heroku
+
+To locally start all of the process types that are defined in your `Procfile`:
+
+```term
+$ heroku local
+```
 ### Experimentation
 
 [[pinecone_sandbox.ipynb]]

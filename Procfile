@@ -1,1 +1,1 @@
-web: gunicorn search_inference:app
+web: gunicorn search_inference_st_app:app
