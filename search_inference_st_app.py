@@ -1,6 +1,7 @@
 import streamlit as st
 import time
-import openai, pinecone
+import openai
+from pymilvus import MilvusClient
 import time, re
 import logging, os
 from PIL import Image
@@ -13,15 +14,22 @@ st.set_page_config(
 )
 
 
-# setup Pinecone and OpenAI
+# setup Milvus and OpenAI
 URL_PREFIX = "https://notes.ammarh.io/"
-# initialize connection to pinecone (get API key at app.pinecone.io)
-pinecone.init(
-    api_key=os.getenv("PINECONE_API_KEY"),
-    environment="us-east1-gcp"
+
+MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
+MILVUS_URI = "https://in03-1e1cf095ffcfaac.api.gcp-us-west1.zillizcloud.com"
+
+MILVUS_CLIENT = MilvusClient(
+    uri=MILVUS_URI,
+    # - For a serverless cluster, use an API key as the token.
+    # - For a dedicated cluster, use the cluster credentials as the token
+    # in the format of 'user:password'.
+    token=MILVUS_API_KEY
 )
+
 # connect to index
-PINECONE_INDEX = pinecone.Index('obsidian-second-brain')
+MILVUS_INDEX = 'obsidian-second-brain'
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 EMBED_MODEL = "text-embedding-ada-002"
@@ -103,31 +111,41 @@ if submit:
         embed_time = time.time() - start_time
 
         try:
-            # retrieve from Pinecone
-            res = PINECONE_INDEX.query(search_embedding, top_k=20, include_metadata=True)
+            # 'client' is a MilvusClient instance.
+            res = MILVUS_CLIENT.search(
+                collection_name="obsidian_second_brain",
+                data=[search_embedding],
+                limit=20,
+                output_fields=["note", "file", "uuid"]
+            )
+
         except:
-            msg = "Pinecone retrieval call failed"
+            msg = "Milvus retrieval call failed"
             logging.error(msg)
             st.error(msg)
             st.stop()
 
         query_time = time.time() - embed_time
 
-
         results = []
-        for match in res['matches']:
-            if match['score'] < session_variables['confidence']:
+        print(f"type(res) {type(res)}")
+        print(f"len(res) {len(res)}")
+
+        for match in res[0]:
+            print(f"type(match) {type(match)}")
+            print(f"len(match) {len(match)}")
+            if match['distance'] < session_variables['confidence']:
                 continue
-            path_list = match['metadata']['file'].split('/')
+            path_list = match['entity']['file'].split('/')
             file = path_list[-1] + ' :: ' + '/'.join(path_list[5:-1])
             link = (URL_PREFIX + '/'.join(path_list[6:])).replace(" ", "+")
-            filtered_notes = [x for x in match['metadata']['note'].split("\n") \
+            filtered_notes = [x for x in match['entity']['note'].split("\n") \
                                 if x != "" and x[0] != "!"]
             context_str = " ".join(filtered_notes)
             results.append({'file': file, 
                             'notes': filtered_notes[:10], 
                             #'notes': match['metadata']['note'].split("\n"),
-                            'score': match['score'],
+                            'score': match['distance'],
                             'link': link,
                             'context' : context_str
                             })
@@ -171,5 +189,5 @@ if submit:
 
             generated_qa_time = time.time() - results_time
 
-    expander.write(generated_qa)
+            expander.write(generated_qa)
     logging.error(f"embed_time={embed_time}, query_time={query_time}, results_time={results_time}, generated_qa_time={generated_qa_time}")

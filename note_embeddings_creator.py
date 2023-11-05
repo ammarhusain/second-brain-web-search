@@ -1,16 +1,16 @@
 import openai
-import pinecone
+from pymilvus import MilvusClient
 import re, os, hashlib, fnmatch
 from tqdm.auto import tqdm
 from time import sleep
 import datetime
 
 # global variables
-PINECONE_INDEX_NAME = "obsidian-second-brain"
 OPENAI_EMBED_MODEL = "text-embedding-ada-002"
-openai.api_key = api_key=os.getenv("OPENAI_API_KEY")
-PINECONE_API_KEY=api_key=os.getenv("PINECONE_API_KEY")
-PINECONE_ENVIRONMENT="us-east1-gcp"
+openai.api_key = os.getenv("OPENAI_API_KEY")
+MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
+MILVUS_URI = "https://in03-1e1cf095ffcfaac.api.gcp-us-west1.zillizcloud.com"
+MILVUS_COLLECTION_NAME = "obsidian_second_brain"
 
 def search_image_files(filename, directory):
     for dirpath, dirnames, filenames in os.walk(directory):
@@ -89,26 +89,17 @@ def get_files_to_index(rootdir):
                             files_to_index.append(filepath)
     return files_to_index
 
-def initialize_pinecone_index(index_name):
-    # initialize connection to pinecone (get API key at app.pinecone.io)
-    pinecone.init(
-        api_key=PINECONE_API_KEY,
-        environment=PINECONE_ENVIRONMENT
+def initialize_milvus_client():
+    # Initialize a MilvusClient instance
+    # Replace uri and token with your own
+    client = MilvusClient(
+        uri=MILVUS_URI,
+        # - For a serverless cluster, use an API key as the token.
+        # - For a dedicated cluster, use the cluster credentials as the token
+        # in the format of 'user:password'.
+        token=MILVUS_API_KEY
     )
-
-    # check if index already exists (it shouldn't if this is first time)
-    if index_name not in pinecone.list_indexes():
-        print("Creating new pinecone index")
-        # if does not exist, create index
-        pinecone.create_index(
-            index_name,
-            dimension=1536,
-            metric='cosine',
-            metadata_config={'indexed': ['file']}
-        )
-    # connect to index
-    index = pinecone.Index(index_name)
-    return index 
+    return client 
 
 def create_note_snippets(files_list):
     VECTOR_WORD_LIMIT = 800
@@ -128,11 +119,10 @@ def create_note_snippets(files_list):
     print(f"Adding {len(notes_snippets)} chunks from {len(files_list)} files")
     return notes_snippets
 
-def upload_to_pinecone(notes_snippets, pinecone_index):
+def upload_to_milvus(notes_snippets, milvus_client):
     batch_size = 100  # how many embeddings we create and insert at once
 
     for i in tqdm(range(0, len(notes_snippets), batch_size)):
-        #print(f"i - {i}")
         # find end of batch
         i_end = min(len(notes_snippets), i+batch_size)
         meta_batch = notes_snippets[i:i_end]
@@ -159,21 +149,26 @@ def upload_to_pinecone(notes_snippets, pinecone_index):
                     print(files)
                     pass
         embeds = [record['embedding'] for record in res['data']]
+
         # cleanup metadata
         meta_batch = [{
-            'uuid': x['uuid'],
-            'file': x['file'],
-            'note': x['note']
-        } for x in meta_batch]
+            'uuid': x[0]['uuid'],
+            'file': x[0]['file'],
+            'note': x[0]['note'],
+            'vector': x[1]
+        } for x in zip(meta_batch, embeds)]
 
-        to_upsert = list(zip(ids_batch, embeds, meta_batch))
-        # upsert to Pinecone
-        pinecone_index.upsert(vectors=to_upsert)
-    print(f"Finished upserting to Pinecone index: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        # add data to milvus
+        # Insert multiple entities
+        res = milvus_client.insert(
+        collection_name=MILVUS_COLLECTION_NAME,
+        data=meta_batch
+        )
+    print(f"Finished upserting to Milvus index: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 if __name__ == '__main__':
-    pinecone_index = initialize_pinecone_index(index_name=PINECONE_INDEX_NAME)
+    milvus_client = initialize_milvus_client()
     files_list = get_files_to_index(rootdir="/Users/ammarh/Documents/second-brain/")
     notes_snippets = create_note_snippets(files_list=files_list)
-    upload_to_pinecone(notes_snippets, pinecone_index)
+    upload_to_milvus(notes_snippets, milvus_client)
