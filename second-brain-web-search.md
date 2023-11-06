@@ -97,8 +97,8 @@ The best approach for you will depend on your specific use case and requirements
 
 ### Daily Jobs
 
-[[com.obsidian.pinecone-embeddings.plist]]
-[[note_embeddings_creator.bash]]
+[[com.obsidian.milvus-embeddings.plist]]
+[[note_embeddings_creator.sh]]
 [[note_embeddings_creator.py]]
 
 ### Flask Core

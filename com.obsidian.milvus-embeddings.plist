@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.obsidian.milvus-embeddings</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/ammarh/Documents/second-brain/vault-management/second-brain-web-search/note_embeddings_creator.sh</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>OPENAI_API_KEY</key>
+		<string>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</string>
+		<key>MILVUS_API_KEY</key>
+		<string>38fee476af7e2e80f87e3435575100a308a138b3ae31b7a59970debd059cd5d1b0b1062e7687eeb44c2ba7d0f6e88d4958dc0761</string>
+	</dict>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>8</integer>
+		<key>Minute</key>
+		<integer>15</integer>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>/Users/ammarh/Library/Logs/LaunchControl/obsidian.milvus-embeddings.stdout.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/ammarh/Library/Logs/LaunchControl/obsidian.milvus-embeddings.stderr.log</string>
+</dict>
+</plist>

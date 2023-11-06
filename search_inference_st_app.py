@@ -128,12 +128,8 @@ if submit:
         query_time = time.time() - embed_time
 
         results = []
-        print(f"type(res) {type(res)}")
-        print(f"len(res) {len(res)}")
 
         for match in res[0]:
-            print(f"type(match) {type(match)}")
-            print(f"len(match) {len(match)}")
             if match['distance'] < session_variables['confidence']:
                 continue
             path_list = match['entity']['file'].split('/')
