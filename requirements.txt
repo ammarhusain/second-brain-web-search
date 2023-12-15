@@ -1,5 +1,5 @@
 pinecone-client
-openai>0.27.0
+openai==0.28
 gunicorn>=20.0,<21.0
 requests
 flask
