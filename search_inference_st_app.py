@@ -145,8 +145,12 @@ if submit:
                             'link': link,
                             'context' : context_str
                             })
-            
-        results = sorted(results, key=lambda x: x['score'], reverse=True)
+        
+        # Use a set to track seen 'file' values
+        seen = set()
+        new_results = [d for d in results if d['file'] not in seen and not seen.add(d['file'])]
+
+        results = sorted(new_results, key=lambda x: x['score'], reverse=True)
         results_time = time.time() - query_time
 
     st.write(f"About {len(results)} results in {time.time()-start_time:.02f} seconds ⏳")
