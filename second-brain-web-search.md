@@ -17,7 +17,7 @@ Found some similar projects:
 - [GitHub - StanGirard/quivr: 🧠 Your Second Brain supercharged by Generative AI 🧠 Dump all your files and chat with your personal assistant on your files & more using GPT 3.5/4, Private, Anthropic, VertexAI, LLMs...](https://github.com/StanGirard/quivr)
 - [Khoj: A Superhuman Companion for your Digital Brain | Y Combinator](https://www.ycombinator.com/companies/khoj)
 
-Both have gotten decent popularity - I should have made mine more general purpose rather than streamlined for my own workflow. In Quivr you can upload your own files.
+#meditations Both have gotten decent popularity - I should have made mine more general purpose rather than streamlined for my own workflow. In Quivr you can upload your own files.
 
 [[2023-06-01-Thursday]] All this could be done super easily now with [[lang-chain]]
 

@@ -4,12 +4,13 @@ import re, os, hashlib, fnmatch
 from tqdm.auto import tqdm
 from time import sleep
 import datetime
+import numpy as np
 
 # global variables
 OPENAI_EMBED_MODEL = "text-embedding-ada-002"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
-MILVUS_URI = "https://in03-1e1cf095ffcfaac.api.gcp-us-west1.zillizcloud.com"
+MILVUS_URI = "https://in03-d33c3dc7f4f88a5.api.gcp-us-west1.zillizcloud.com"
 MILVUS_COLLECTION_NAME = "obsidian_second_brain"
 
 def search_image_files(filename, directory):
@@ -172,3 +173,13 @@ if __name__ == '__main__':
     files_list = get_files_to_index(rootdir="/Users/ammarh/Documents/second-brain/")
     notes_snippets = create_note_snippets(files_list=files_list)
     upload_to_milvus(notes_snippets, milvus_client)
+
+    # do a quick suery everytime to keep the instance alive
+    for i in range(5):
+        random_search_embedding = np.random.uniform(-1, 1, 1536).tolist()
+        _ = milvus_client.search(
+            collection_name="obsidian_second_brain",
+            data=[random_search_embedding],
+            limit=5,
+            output_fields=["note", "file", "uuid"]
+        )

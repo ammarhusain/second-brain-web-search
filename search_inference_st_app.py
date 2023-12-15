@@ -18,7 +18,7 @@ st.set_page_config(
 URL_PREFIX = "https://notes.ammarh.io/"
 
 MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
-MILVUS_URI = "https://in03-1e1cf095ffcfaac.api.gcp-us-west1.zillizcloud.com"
+MILVUS_URI = "https://in03-d33c3dc7f4f88a5.api.gcp-us-west1.zillizcloud.com" 
 
 MILVUS_CLIENT = MilvusClient(
     uri=MILVUS_URI,
