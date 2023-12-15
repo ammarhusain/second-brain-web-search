@@ -102,8 +102,8 @@ if submit:
             input=session_variables['searchtext'],
             engine=EMBED_MODEL
             )['data'][0]['embedding']
-        except:
-            msg = "OpenAI embedding call failed"
+        except Exception as e:
+            msg = f"OpenAI embedding call failed with exception - {e}"
             logging.error(msg)
             st.error(msg)
             st.stop()
